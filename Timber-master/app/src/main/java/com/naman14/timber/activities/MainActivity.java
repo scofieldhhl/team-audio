@@ -320,20 +320,20 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                 NavigationUtils.navigateToSettings(MainActivity.this);
                 break;
             case R.id.nav_help:
-                Intent intent = new Intent(Intent.ACTION_VIEW);
+                /*Intent intent = new Intent(Intent.ACTION_VIEW);
                 Uri data = Uri.parse("mailto:namandwivedi14@gmail.com");
                 intent.setData(data);
-                startActivity(intent);
+                startActivity(intent);*/
                 break;
             case R.id.nav_about:
                 mDrawerLayout.closeDrawers();
-                Handler handler = new Handler();
+                /*Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         Helpers.showAbout(MainActivity.this);
                     }
-                }, 350);
+                }, 350);*/
 
                 break;
         }

@@ -6,7 +6,7 @@ android {
         release {
             keyAlias 'team'
             keyPassword 'HUANGhl8811^'
-            storeFile file('F:/tools/Git/Timber-master/key/key.jks')
+            storeFile file('F:/Program Files/Git/team-audio/Timber-master/key/key.jks')
             storePassword 'HUANGhl8811^'
         }
     }
@@ -14,7 +14,7 @@ android {
     buildToolsVersion '23.0.3'
 
     defaultConfig {
-        applicationId "naman14.timber"
+        applicationId "team.system.hifiplayer"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 9
