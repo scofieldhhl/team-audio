@@ -67,6 +67,7 @@ import com.naman14.timber.permissions.Nammu;
 import com.naman14.timber.provider.MusicPlaybackState;
 import com.naman14.timber.provider.RecentStore;
 import com.naman14.timber.provider.SongPlayCount;
+import com.naman14.timber.utils.LogTool;
 import com.naman14.timber.utils.NavigationUtils;
 import com.naman14.timber.utils.PreferencesUtility;
 import com.naman14.timber.utils.TimberUtils;
@@ -127,7 +128,7 @@ public class MusicService extends Service {
     public static final int REPEAT_ALL = 2;
     public static final int MAX_HISTORY_SIZE = 1000;
     private static final String TAG = "MusicPlaybackService";
-    private static final boolean D = false;
+    private static final boolean D = true;
     private static final String SHUTDOWN = "com.naman14.timber.shutdown";
     private static final int IDCOLIDX = 0;
     private static final int TRACK_ENDED = 1;
@@ -190,6 +191,9 @@ public class MusicService extends Service {
 
     private int mCardId;
 
+    /**
+     * 当前播放索引
+     */
     private int mPlayPos = -1;
 
     private int mNextPlayPos = -1;
@@ -200,7 +204,7 @@ public class MusicService extends Service {
 
     private int mShuffleMode = SHUFFLE_NONE;
 
-    private int mRepeatMode = REPEAT_NONE;
+    private int mRepeatMode = REPEAT_NONE;  //循环模式
 
     private int mServiceStartId = -1;
 
@@ -281,8 +285,7 @@ public class MusicService extends Service {
         mRecentStore = RecentStore.getInstance(this);
 
 
-        mHandlerThread = new HandlerThread("MusicPlayerHandler",
-                android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        mHandlerThread = new HandlerThread("MusicPlayerHandler", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mHandlerThread.start();
 
 
@@ -701,13 +704,20 @@ public class MusicService extends Service {
         }
     }
 
+    /**
+     * 将list添加到当前播放列表中
+     * @param list
+     * @param position
+     * @param sourceId
+     * @param sourceType
+     */
     private void addToPlayList(final long[] list, int position, long sourceId, TimberUtils.IdType sourceType) {
         final int addlen = list.length;
         if (position < 0) {
             mPlaylist.clear();
             position = 0;
         }
-
+        //使用add()方法增加新的元素时，如果要增加的数据量很大，应该使用ensureCapacity()方法，该方法的作用是预先设置Arraylist的大小，这样可以大大提高初始化速度。
         mPlaylist.ensureCapacity(mPlaylist.size() + addlen);
         if (position > mPlaylist.size()) {
             position = mPlaylist.size();
@@ -799,9 +809,7 @@ public class MusicService extends Service {
 
             updateCursor(mPlaylist.get(mPlayPos).mId);
             while (true) {
-                if (mCursor != null
-                        && openFile(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/"
-                        + mCursor.getLong(IDCOLIDX))) {
+                if (mCursor != null && openFile(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX))) {
                     break;
                 }
 
@@ -842,11 +850,16 @@ public class MusicService extends Service {
         sendBroadcast(i);
     }
 
+    /**
+     * 获取下一首歌曲在播放列表playlist中的索引
+     * @param force
+     * @return
+     */
     private int getNextPosition(final boolean force) {
         if (mPlaylist == null || mPlaylist.isEmpty()) {
             return -1;
         }
-        if (!force && mRepeatMode == REPEAT_CURRENT) {
+        if (!force && mRepeatMode == REPEAT_CURRENT) {//单曲循环
             if (mPlayPos < 0) {
                 return 0;
             }
@@ -926,14 +939,32 @@ public class MusicService extends Service {
         setNextTrack(getNextPosition(false));
     }
 
+    /**
+     * 设置下一个首歌曲
+     * @param position
+     */
     private void setNextTrack(int position) {
         mNextPlayPos = position;
         if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
-        if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
+        /*if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
             final long id = mPlaylist.get(mNextPlayPos).mId;
             mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
         } else {
             mPlayer.setNextDataSource(null);
+        }*/
+    }
+
+    /**
+     * 播放下一个首歌曲
+     */
+    public void playNextTrack() {
+        if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
+        LogTool.d("setNextTrack: next play position = " + mNextPlayPos);
+        if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
+            final long id = mPlaylist.get(mNextPlayPos).mId;
+            mPlayer.setDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
+            mPlayer.mCurrentMediaPlayer.start();
+            setNextTrack();
         }
     }
 
@@ -1299,6 +1330,12 @@ public class MusicService extends Service {
         }
     }
 
+
+    /**
+     * 播放路径
+     * @param path
+     * @return
+     */
     public boolean openFile(final String path) {
         if (D) Log.d(TAG, "openFile: path = " + path);
         synchronized (this) {
@@ -1316,12 +1353,10 @@ public class MusicService extends Service {
                     // Ignore
                 }
 
-                if (id != -1 && path.startsWith(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString())) {
+                if (id != -1 && path.startsWith(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString())) {
                     updateCursor(uri);
 
-                } else if (id != -1 && path.startsWith(
-                        MediaStore.Files.getContentUri("external").toString())) {
+                } else if (id != -1 && path.startsWith(MediaStore.Files.getContentUri("external").toString())) {
                     updateCursor(id);
 
                 } else if (path.startsWith("content://downloads/")) {
@@ -1348,8 +1383,7 @@ public class MusicService extends Service {
                 try {
                     if (mCursor != null && shouldAddToPlaylist) {
                         mPlaylist.clear();
-                        mPlaylist.add(new MusicPlaybackTrack(
-                                mCursor.getLong(IDCOLIDX), -1, TimberUtils.IdType.NA, -1));
+                        mPlaylist.add(new MusicPlaybackTrack(mCursor.getLong(IDCOLIDX), -1, TimberUtils.IdType.NA, -1));
                         notifyChange(QUEUE_CHANGED);
                         mPlayPos = 0;
                         mHistory.clear();
@@ -1640,6 +1674,10 @@ public class MusicService extends Service {
         }
     }
 
+    /**
+     * 获取当前播放歌曲id
+     * @return
+     */
     public long getAudioId() {
         MusicPlaybackTrack track = getCurrentTrack();
         if (track != null) {
@@ -1781,6 +1819,13 @@ public class MusicService extends Service {
         return isPlaying() || System.currentTimeMillis() - mLastPlayedTime < IDLE_DELAY;
     }
 
+    /**
+     * 更新当前播放列表 mPlaylist
+     * @param list
+     * @param position
+     * @param sourceId
+     * @param sourceType
+     */
     public void open(final long[] list, final int position, long sourceId, TimberUtils.IdType sourceType) {
         synchronized (this) {
             if (mShuffleMode == SHUFFLE_AUTO) {
@@ -1789,7 +1834,7 @@ public class MusicService extends Service {
             final long oldId = getAudioId();
             final int listlength = list.length;
             boolean newlist = true;
-            if (mPlaylist.size() == listlength) {
+            if (mPlaylist.size() == listlength) {//判断当前播放列表是否与要播放的列表是同一列表
                 newlist = false;
                 for (int i = 0; i < listlength; i++) {
                     if (list[i] != mPlaylist.get(i).mId) {
@@ -1808,7 +1853,7 @@ public class MusicService extends Service {
                 mPlayPos = mShuffler.nextInt(mPlaylist.size());
             }
             mHistory.clear();
-            openCurrentAndNext();
+            openCurrentAndNext();   //打开当前和next
             if (oldId != getAudioId()) {
                 notifyChange(META_CHANGED);
             }
@@ -1823,23 +1868,25 @@ public class MusicService extends Service {
         play(true);
     }
 
+    /**
+     * @param createNewNextTrack
+     */
     public void play(boolean createNewNextTrack) {
-        int status = mAudioManager.requestAudioFocus(mAudioFocusListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        //音频焦点机制。
+        int status = mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         if (D) Log.d(TAG, "Starting playback: audio focus request status = " + status);
 
-        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {//判断是否获取音频焦点
             return;
         }
 
-        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);//打开音频效果
         intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
         sendBroadcast(intent);
 
-        mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
-                MediaButtonIntentReceiver.class.getName()));
+        mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             mSession.setActive(true);
 
@@ -2150,6 +2197,17 @@ public class MusicService extends Service {
                         }
                         break;
                     case TRACK_WENT_TO_NEXT:
+                        /*{
+                            mNextPlayPos = getNextPosition(false);
+                            if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
+                            if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
+                                final long id = mPlaylist.get(mNextPlayPos).mId;
+                                mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
+                            } else {
+                                mPlayer.setNextDataSource(null);
+                            }
+                        }*/
+                        service.playNextTrack();
                         service.setAndRecordPlayPos(service.mNextPlayPos);
                         service.setNextTrack();
                         if (service.mCursor != null) {
@@ -2264,7 +2322,7 @@ public class MusicService extends Service {
 
         private MediaPlayer mCurrentMediaPlayer = new MediaPlayer();
 
-        private MediaPlayer mNextMediaPlayer;
+        /*private MediaPlayer mNextMediaPlayer;*/
 
         private Handler mHandler;
 
@@ -2288,6 +2346,12 @@ public class MusicService extends Service {
         }
 
 
+        /**
+         *  prepare Player path(将path装载到player做好准备)
+         * @param player
+         * @param path
+         * @return
+         */
         private boolean setDataSourceImpl(final MediaPlayer player, final String path) {
             try {
                 player.reset();
@@ -2314,7 +2378,7 @@ public class MusicService extends Service {
 
 
         public void setNextDataSource(final String path) {
-            mNextMediaPath = null;
+            /*mNextMediaPath = null;
             try {
                 mCurrentMediaPlayer.setNextMediaPlayer(null);
             } catch (IllegalArgumentException e) {
@@ -2341,7 +2405,7 @@ public class MusicService extends Service {
                     mNextMediaPlayer.release();
                     mNextMediaPlayer = null;
                 }
-            }
+            }*/
         }
 
 
@@ -2426,14 +2490,16 @@ public class MusicService extends Service {
             return false;
         }
 
-
         @Override
         public void onCompletion(final MediaPlayer mp) {
-            if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
+            /*if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
                 mCurrentMediaPlayer.release();
                 mCurrentMediaPlayer = mNextMediaPlayer;
                 mNextMediaPath = null;
                 mNextMediaPlayer = null;
+                mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
+            }*/
+            if (mp == mCurrentMediaPlayer && mCurrentMediaPlayer != null) {
                 mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
             } else {
                 mService.get().mWakeLock.acquire(30000);
@@ -2442,6 +2508,9 @@ public class MusicService extends Service {
             }
         }
     }
+
+    //add by hhl
+
 
     private static final class ServiceStub extends ITimberService.Stub {
 

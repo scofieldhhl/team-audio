@@ -5,8 +5,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
-
+        classpath 'com.android.tools.build:gradle:2.2.0'
+        apply plugin: 'java'
+        sourceCompatibility = 1.7
+        targetCompatibility = 1.7
     }
 }
 
@@ -15,4 +17,9 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
     }
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = "1.7"
+        targetCompatibility = "1.7"
+    }
 }
+

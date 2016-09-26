@@ -70,4 +70,5 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:commons:0.8.5.3@aar') {
         transitive = true
     }
+    compile 'com.google.guava:guava:19.0'
 }

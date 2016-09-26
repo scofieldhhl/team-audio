@@ -462,6 +462,14 @@ public class MusicPlayer {
         }
     }
 
+    /**
+     * @param context
+     * @param list    歌曲列表
+     * @param position
+     * @param sourceId
+     * @param sourceType 分类类型
+     * @param forceShuffle 随机播放
+     */
     public static void playAll(final Context context, final long[] list, int position,
                                final long sourceId, final IdType sourceType,
                                final boolean forceShuffle) {
