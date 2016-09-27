@@ -107,7 +107,21 @@ public class MainFragment extends Fragment {
         super.onResume();
         String ateKey = Helpers.getATEKey(getActivity());
         ATEUtils.setStatusBarColor(getActivity(), ateKey, Config.primaryColor(getActivity(), ateKey));
-
+//        try{
+//            MediaSet mediaSet = MediaScanner.create()
+//                    .directory("/storage/emulated/0/Download")
+//                    .directory("/storage/emulated/0/")
+//                    .matching("glob:**/*.{dsf,dff,dst,dsd,wma,aif,aac,iso}") //{"dsf","dff","dst","dsd", "wma", "aif", "aac", "iso"}
+//                    .findMedia()
+//                    .collectMeta()
+//                    .mediaSet();
+//            LogTool.d("size:" + mediaSet.size());
+//            for(MediaEntry mediaEntry : mediaSet.entries()){
+//                LogTool.d("mediaEntry:" + mediaEntry.toString());
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
     }
 
     @Override

@@ -856,7 +856,9 @@ public class MusicService extends Service {
      * @return
      */
     private int getNextPosition(final boolean force) {
+        LogTool.d("getNextPosition+ force:"+ force);
         if (mPlaylist == null || mPlaylist.isEmpty()) {
+            LogTool.e("mPlaylist == null || mPlaylist.isEmpty()");
             return -1;
         }
         if (!force && mRepeatMode == REPEAT_CURRENT) {//µ¥ÇúÑ­»·
@@ -898,8 +900,8 @@ public class MusicService extends Service {
             }
 
 
-            if (minNumPlays > 0 && numTracksWithMinNumPlays == numTracks
-                    && mRepeatMode != REPEAT_ALL && !force) {
+            if (minNumPlays > 0 && numTracksWithMinNumPlays == numTracks && mRepeatMode != REPEAT_ALL && !force) {
+                LogTool.e("minNumPlays:"+ minNumPlays + "numTracksWithMinNumPlays:"+numTracksWithMinNumPlays + "numTracks:"+numTracks);
                 return -1;
             }
 
@@ -924,10 +926,12 @@ public class MusicService extends Service {
         } else {
             if (mPlayPos >= mPlaylist.size() - 1) {
                 if (mRepeatMode == REPEAT_NONE && !force) {
+                    LogTool.e("mRepeatMode == REPEAT_NONE && !force");
                     return -1;
                 } else if (mRepeatMode == REPEAT_ALL || force) {
                     return 0;
                 }
+                LogTool.e("mPlayPos >= mPlaylist.size() - 1");
                 return -1;
             } else {
                 return mPlayPos + 1;
@@ -1076,8 +1080,7 @@ public class MusicService extends Service {
             saveQueue(true);
             if (isPlaying()) {
 
-                if (mNextPlayPos >= 0 && mNextPlayPos < mPlaylist.size()
-                        && getShuffleMode() != SHUFFLE_NONE) {
+                if (mNextPlayPos >= 0 && mNextPlayPos < mPlaylist.size() && getShuffleMode() != SHUFFLE_NONE) {
                     setNextTrack(mNextPlayPos);
                 } else {
                     setNextTrack();
@@ -2197,16 +2200,6 @@ public class MusicService extends Service {
                         }
                         break;
                     case TRACK_WENT_TO_NEXT:
-                        /*{
-                            mNextPlayPos = getNextPosition(false);
-                            if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
-                            if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
-                                final long id = mPlaylist.get(mNextPlayPos).mId;
-                                mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
-                            } else {
-                                mPlayer.setNextDataSource(null);
-                            }
-                        }*/
                         service.playNextTrack();
                         service.setAndRecordPlayPos(service.mNextPlayPos);
                         service.setNextTrack();
