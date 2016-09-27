@@ -71,4 +71,6 @@ dependencies {
         transitive = true
     }
     compile 'com.google.guava:guava:19.0'
+    compile project(':ijkplayer-java')
+    compile project(':ijkplayer-armv7a')
 }

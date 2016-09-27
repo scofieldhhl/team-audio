@@ -1,1 +1,3 @@
 include ':app'
+include ':ijkplayer-armv7a'
+include ':ijkplayer-java'
