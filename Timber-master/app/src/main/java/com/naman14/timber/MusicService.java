@@ -85,6 +85,8 @@ import java.util.TreeSet;
 import de.Maxr1998.trackselectorlib.ModNotInstalledException;
 import de.Maxr1998.trackselectorlib.NotificationHelper;
 import de.Maxr1998.trackselectorlib.TrackItem;
+import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 @SuppressLint("NewApi")
 public class MusicService extends Service {
@@ -192,7 +194,7 @@ public class MusicService extends Service {
     private int mCardId;
 
     /**
-     * µ±Ç°²¥·ÅË÷Òý
+     * ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     private int mPlayPos = -1;
 
@@ -204,7 +206,7 @@ public class MusicService extends Service {
 
     private int mShuffleMode = SHUFFLE_NONE;
 
-    private int mRepeatMode = REPEAT_NONE;  //Ñ­»·Ä£Ê½
+    private int mRepeatMode = REPEAT_NONE;  //Ñ­ï¿½ï¿½Ä£Ê½
 
     private int mServiceStartId = -1;
 
@@ -705,7 +707,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ½«listÌí¼Óµ½µ±Ç°²¥·ÅÁÐ±íÖÐ
+     * ï¿½ï¿½listï¿½ï¿½Óµï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½
      * @param list
      * @param position
      * @param sourceId
@@ -717,7 +719,7 @@ public class MusicService extends Service {
             mPlaylist.clear();
             position = 0;
         }
-        //Ê¹ÓÃadd()·½·¨Ôö¼ÓÐÂµÄÔªËØÊ±£¬Èç¹ûÒªÔö¼ÓµÄÊý¾ÝÁ¿ºÜ´ó£¬Ó¦¸ÃÊ¹ÓÃensureCapacity()·½·¨£¬¸Ã·½·¨µÄ×÷ÓÃÊÇÔ¤ÏÈÉèÖÃArraylistµÄ´óÐ¡£¬ÕâÑù¿ÉÒÔ´ó´óÌá¸ß³õÊ¼»¯ËÙ¶È¡£
+        //Ê¹ï¿½ï¿½add()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½Ôªï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü´ï¿½Ó¦ï¿½ï¿½Ê¹ï¿½ï¿½ensureCapacity()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Arraylistï¿½Ä´ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ß³ï¿½Ê¼ï¿½ï¿½ï¿½Ù¶È¡ï¿½
         mPlaylist.ensureCapacity(mPlaylist.size() + addlen);
         if (position > mPlaylist.size()) {
             position = mPlaylist.size();
@@ -851,7 +853,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * »ñÈ¡ÏÂÒ»Ê×¸èÇúÔÚ²¥·ÅÁÐ±íplaylistÖÐµÄË÷Òý
+     * ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½×¸ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½Ð±ï¿½playlistï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½
      * @param force
      * @return
      */
@@ -861,7 +863,7 @@ public class MusicService extends Service {
             LogTool.e("mPlaylist == null || mPlaylist.isEmpty()");
             return -1;
         }
-        if (!force && mRepeatMode == REPEAT_CURRENT) {//µ¥ÇúÑ­»·
+        if (!force && mRepeatMode == REPEAT_CURRENT) {//ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½
             if (mPlayPos < 0) {
                 return 0;
             }
@@ -944,7 +946,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ÉèÖÃÏÂÒ»¸öÊ×¸èÇú
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½×¸ï¿½ï¿½ï¿½
      * @param position
      */
     private void setNextTrack(int position) {
@@ -959,7 +961,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ²¥·ÅÏÂÒ»¸öÊ×¸èÇú
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½×¸ï¿½ï¿½ï¿½
      */
     public void playNextTrack() {
         if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
@@ -1335,7 +1337,7 @@ public class MusicService extends Service {
 
 
     /**
-     * ²¥·ÅÂ·¾¶
+     * ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
      * @param path
      * @return
      */
@@ -1678,7 +1680,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * »ñÈ¡µ±Ç°²¥·Å¸èÇúid
+     * ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½id
      * @return
      */
     public long getAudioId() {
@@ -1823,7 +1825,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ¸üÐÂµ±Ç°²¥·ÅÁÐ±í mPlaylist
+     * ï¿½ï¿½ï¿½Âµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ mPlaylist
      * @param list
      * @param position
      * @param sourceId
@@ -1837,7 +1839,7 @@ public class MusicService extends Service {
             final long oldId = getAudioId();
             final int listlength = list.length;
             boolean newlist = true;
-            if (mPlaylist.size() == listlength) {//ÅÐ¶Ïµ±Ç°²¥·ÅÁÐ±íÊÇ·ñÓëÒª²¥·ÅµÄÁÐ±íÊÇÍ¬Ò»ÁÐ±í
+            if (mPlaylist.size() == listlength) {//ï¿½Ð¶Ïµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Åµï¿½ï¿½Ð±ï¿½ï¿½ï¿½Í¬Ò»ï¿½Ð±ï¿½
                 newlist = false;
                 for (int i = 0; i < listlength; i++) {
                     if (list[i] != mPlaylist.get(i).mId) {
@@ -1856,7 +1858,7 @@ public class MusicService extends Service {
                 mPlayPos = mShuffler.nextInt(mPlaylist.size());
             }
             mHistory.clear();
-            openCurrentAndNext();   //´ò¿ªµ±Ç°ºÍnext
+            openCurrentAndNext();   //ï¿½ò¿ªµï¿½Ç°ï¿½ï¿½next
             if (oldId != getAudioId()) {
                 notifyChange(META_CHANGED);
             }
@@ -1875,16 +1877,16 @@ public class MusicService extends Service {
      * @param createNewNextTrack
      */
     public void play(boolean createNewNextTrack) {
-        //ÒôÆµ½¹µã»úÖÆ¡£
+        //ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¡ï¿½
         int status = mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         if (D) Log.d(TAG, "Starting playback: audio focus request status = " + status);
 
-        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {//ÅÐ¶ÏÊÇ·ñ»ñÈ¡ÒôÆµ½¹µã
+        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {//ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½È¡ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½
             return;
         }
 
-        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);//´ò¿ªÒôÆµÐ§¹û
+        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);//ï¿½ï¿½ï¿½ï¿½ÆµÐ§ï¿½ï¿½
         intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
         sendBroadcast(intent);
@@ -2308,12 +2310,12 @@ public class MusicService extends Service {
         }
     }
 
-    private static final class MultiPlayer implements MediaPlayer.OnErrorListener,
-            MediaPlayer.OnCompletionListener {
+    private static final class MultiPlayer{
 
         private final WeakReference<MusicService> mService;
 
-        private MediaPlayer mCurrentMediaPlayer = new MediaPlayer();
+//        private MediaPlayer mCurrentMediaPlayer = new MediaPlayer();
+        private IjkMediaPlayer mCurrentMediaPlayer = initIjkPlayer();
 
         /*private MediaPlayer mNextMediaPlayer;*/
 
@@ -2322,6 +2324,25 @@ public class MusicService extends Service {
         private boolean mIsInitialized = false;
 
         private String mNextMediaPath;
+
+        public IjkMediaPlayer initIjkPlayer(){
+            IjkMediaPlayer ijkMediaPlayer = null;
+            try {
+                ijkMediaPlayer = new IjkMediaPlayer();
+                ijkMediaPlayer.setScreenOnWhilePlaying(true);
+                ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                ijkMediaPlayer.setOnPreparedListener(mPreparedListener);
+                ijkMediaPlayer.setOnInfoListener(mInfoListener);
+                ijkMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
+                ijkMediaPlayer.setOnCompletionListener(mCompletionListener);
+                ijkMediaPlayer.setOnErrorListener(mErrorListener);
+
+                ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
+            } catch (Exception ex) {
+                LogTool.e("Unable to open content: " +ex);
+            }
+            return ijkMediaPlayer;
+        }
 
 
         public MultiPlayer(final MusicService service) {
@@ -2340,12 +2361,11 @@ public class MusicService extends Service {
 
 
         /**
-         *  prepare Player path(½«path×°ÔØµ½player×öºÃ×¼±¸)
          * @param player
          * @param path
          * @return
          */
-        private boolean setDataSourceImpl(final MediaPlayer player, final String path) {
+        private boolean setDataSourceImpl(final IjkMediaPlayer player, final String path) {
             try {
                 player.reset();
                 player.setOnPreparedListener(null);
@@ -2356,7 +2376,7 @@ public class MusicService extends Service {
                 }
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-                player.prepare();
+                player.prepareAsync();
             } catch (final IOException todo) {
 
                 return false;
@@ -2364,8 +2384,8 @@ public class MusicService extends Service {
 
                 return false;
             }
-            player.setOnCompletionListener(this);
-            player.setOnErrorListener(this);
+            player.setOnCompletionListener(mCompletionListener);
+            player.setOnErrorListener(mErrorListener);
             return true;
         }
 
@@ -2457,11 +2477,11 @@ public class MusicService extends Service {
             return mCurrentMediaPlayer.getAudioSessionId();
         }
 
-        public void setAudioSessionId(final int sessionId) {
+        /*public void setAudioSessionId(final int sessionId) {
             mCurrentMediaPlayer.setAudioSessionId(sessionId);
-        }
+        }*/
 
-        @Override
+        /*@Override
         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
             Log.w(TAG, "Music Server Error what: " + what + " extra: " + extra);
             switch (what) {
@@ -2472,7 +2492,7 @@ public class MusicService extends Service {
 
                     mIsInitialized = false;
                     mCurrentMediaPlayer.release();
-                    mCurrentMediaPlayer = new MediaPlayer();
+                    mCurrentMediaPlayer = initIjkPlayer();
                     mCurrentMediaPlayer.setWakeMode(service, PowerManager.PARTIAL_WAKE_LOCK);
                     Message msg = mHandler.obtainMessage(SERVER_DIED, errorInfo);
                     mHandler.sendMessageDelayed(msg, 2000);
@@ -2481,17 +2501,17 @@ public class MusicService extends Service {
                     break;
             }
             return false;
-        }
+        }*/
 
-        @Override
+        /*@Override
         public void onCompletion(final MediaPlayer mp) {
-            /*if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
+            *//*if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
                 mCurrentMediaPlayer.release();
                 mCurrentMediaPlayer = mNextMediaPlayer;
                 mNextMediaPath = null;
                 mNextMediaPlayer = null;
                 mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
-            }*/
+            }*//*
             if (mp == mCurrentMediaPlayer && mCurrentMediaPlayer != null) {
                 mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
             } else {
@@ -2499,10 +2519,77 @@ public class MusicService extends Service {
                 mHandler.sendEmptyMessage(TRACK_ENDED);
                 mHandler.sendEmptyMessage(RELEASE_WAKELOCK);
             }
-        }
+        }*/
+
+
+        IMediaPlayer.OnPreparedListener mPreparedListener = new IMediaPlayer.OnPreparedListener() {
+            public void onPrepared(IMediaPlayer mp) {
+                LogTool.i("onPrepared");
+
+            }
+        };
+
+        IMediaPlayer.OnInfoListener mInfoListener = new IMediaPlayer.OnInfoListener() {
+
+            @Override
+            public boolean onInfo(IMediaPlayer mp, int what, int extra) {
+                LogTool.d("getCurrentPosition:" + mp.getCurrentPosition());
+                return false;
+            }
+        };
+
+        IMediaPlayer.OnBufferingUpdateListener mBufferingUpdateListener = new IMediaPlayer.OnBufferingUpdateListener() {
+                public void onBufferingUpdate(IMediaPlayer mp, int percent) {
+                    LogTool.d("percent:" + percent);
+//					mCurrentBufferPercentage = percent;
+                }
+            };
+
+        IMediaPlayer.OnCompletionListener mCompletionListener = new IMediaPlayer.OnCompletionListener() {
+            public void onCompletion(IMediaPlayer mp) {
+                LogTool.d("onCompletion");
+                if (mp == mCurrentMediaPlayer && mCurrentMediaPlayer != null) {
+                    mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
+                } else {
+                    mService.get().mWakeLock.acquire(30000);
+                    mHandler.sendEmptyMessage(TRACK_ENDED);
+                    mHandler.sendEmptyMessage(RELEASE_WAKELOCK);
+                }
+            }
+        };
+        IMediaPlayer.OnErrorListener mErrorListener = new IMediaPlayer.OnErrorListener(){
+
+            @Override
+            public boolean onError(IMediaPlayer mp, int what, int extra) {
+                LogTool.d("what:" + what + "--" + "extra:" + extra);
+                switch (what) {
+                    case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                        final MusicService service = mService.get();
+                        final TrackErrorInfo errorInfo = new TrackErrorInfo(service.getAudioId(),
+                                service.getTrackName());
+
+                        mIsInitialized = false;
+                        mCurrentMediaPlayer.release();
+                        mCurrentMediaPlayer = initIjkPlayer();
+                        mCurrentMediaPlayer.setWakeMode(service, PowerManager.PARTIAL_WAKE_LOCK);
+                        Message msg = mHandler.obtainMessage(SERVER_DIED, errorInfo);
+                        mHandler.sendMessageDelayed(msg, 2000);
+                        return true;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        };
+        IMediaPlayer.OnSeekCompleteListener mSeekCompleteListener = new IMediaPlayer.OnSeekCompleteListener(){
+
+            @Override
+            public void onSeekComplete(IMediaPlayer mp) {
+                LogTool.d("mSeekCompleteListener");
+            }
+        };
     }
 
-    //add by hhl
 
 
     private static final class ServiceStub extends ITimberService.Stub {
