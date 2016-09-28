@@ -30,14 +30,18 @@ import android.view.ViewGroup;
 import com.naman14.timber.R;
 import com.naman14.timber.activities.BaseActivity;
 import com.naman14.timber.adapters.SongsListAdapter;
+import com.naman14.timber.dataloaders.MultimediaFileScanner;
 import com.naman14.timber.dataloaders.SongLoader;
 import com.naman14.timber.listeners.MusicStateListener;
 import com.naman14.timber.models.Song;
+import com.naman14.timber.utils.LogTool;
 import com.naman14.timber.utils.PreferencesUtility;
 import com.naman14.timber.utils.SortOrder;
 import com.naman14.timber.widgets.DividerItemDecoration;
 import com.naman14.timber.widgets.FastScroller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SongsFragment extends Fragment implements MusicStateListener {
@@ -45,6 +49,7 @@ public class SongsFragment extends Fragment implements MusicStateListener {
     private SongsListAdapter mAdapter;
     private RecyclerView recyclerView;
     private PreferencesUtility mPreferences;
+    private List<Song> mSongList;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -64,6 +69,42 @@ public class SongsFragment extends Fragment implements MusicStateListener {
 
         new loadSongs().execute("");
         ((BaseActivity) getActivity()).setMusicStateListenerListener(this);
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected void onPreExecute() {
+                // TODO Auto-generated method stub
+                super.onPreExecute();
+                isLoading = true;
+//                        loading.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                // TODO Auto-generated method stub
+                super.onPostExecute(result);
+                isLoading = false;
+//                        loading.setVisibility(View.GONE);
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // TODO Auto-generated method stub
+                MultimediaFileScanner.getInstance(getActivity()).startScanning(MEDIA_TYPE, MAX_DEEP, dirback);
+                return null;
+            }
+        }.execute();
+
+
+        /*stop.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                MultimediaFileScanner.getInstance(getApplicationContext()).stopScanning();
+            }
+        });*/
 
         return rootView;
     }
@@ -85,8 +126,11 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(final Void... unused) {
-                List<Song> songList = SongLoader.getAllSongs(getActivity());
-                mAdapter.updateDataSet(songList);
+                mSongList = SongLoader.getAllSongs(getActivity());
+                mAdapter.updateDataSet(mSongList);
+
+                //加载HQSong
+                MultimediaFileScanner.getInstance(getActivity()).scanTheDirectory(null, mPath, MEDIA_TYPE, fileback);
                 return null;
             }
 
@@ -144,8 +188,13 @@ public class SongsFragment extends Fragment implements MusicStateListener {
 
         @Override
         protected String doInBackground(String... params) {
-            if (getActivity() != null)
-                mAdapter = new SongsListAdapter((AppCompatActivity) getActivity(), SongLoader.getAllSongs(getActivity()), false);
+            if (getActivity() != null){
+                mSongList = SongLoader.getAllSongs(getActivity());
+                mAdapter = new SongsListAdapter((AppCompatActivity) getActivity(), mSongList, false);
+                //加载HQSong
+
+                MultimediaFileScanner.getInstance(getActivity()).scanTheDirectory(null, mPath, MEDIA_TYPE, fileback);
+            }
             return "Executed";
         }
 
@@ -161,4 +210,77 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         protected void onPreExecute() {
         }
     }
+
+
+    //add by hhl---------------------------------------------------------------------------------------------------------------------------------------
+
+    MultimediaFileScanner.ScanCallback dirback = new MultimediaFileScanner.ScanCallback() {
+
+        @Override
+        public void onScanCompleted(boolean completed) {
+            // TODO Auto-generated method stub
+            LogTool.v("onScanCompleted-->" + completed);
+//            handler.sendEmptyMessage(UPDATE_DATA);
+        }
+
+        @Override
+        public void onError(Exception e, int code) {
+            // TODO Auto-generated method stub
+            LogTool.v("onError-->" + e.getMessage());
+        }
+
+        @Override
+        public void onFind(HashMap<String, Object> device, String path) {
+            // TODO Auto-generated method stub
+            LogTool.v("onFind dir-->" + path);
+//            dirs.add(new File(path));
+        }
+    };
+
+    MultimediaFileScanner.ScanCallback fileback = new MultimediaFileScanner.ScanCallback() {
+
+        @Override
+        public void onScanCompleted(boolean completed) {
+            // TODO Auto-generated method stub
+            LogTool.v("onScan current dir Completed-->" + completed);
+        }
+
+        @Override
+        public void onError(Exception e, int code) {
+            // TODO Auto-generated method stub
+            LogTool.v("onError-->" + e.getMessage());
+        }
+
+        @Override
+        public void onFind(HashMap<String, Object> device, String path) {
+            // TODO Auto-generated method stub
+            LogTool.v("onFind MediaFile-->" + path);
+            if(mSongList == null){
+                mSongList = new ArrayList<>();
+            }
+            mSongList.add(getSongFromPath(path));
+            onMetaChanged();
+//            files.add(new File(path));
+        }
+    };
+
+    private Song getSongFromPath(String path){
+        Song md = new Song();
+        String[] arrFile = path.split("\\.");
+        String[] arrFileName = path.split("/");
+        md.title = arrFile[arrFile.length -1];
+        if(arrFileName != null && arrFileName.length > 0){
+            md.title = arrFileName[arrFileName.length - 1].substring(0,arrFileName[arrFileName.length - 1].indexOf("."));
+        }
+        md.id = -100;
+        md.duration = 0;
+        md.artistName = "";
+        md.path = path;
+        return md;
+    }
+
+    boolean isLoading = false;
+    private int MEDIA_TYPE = MultimediaFileScanner.TYPE_AUDIO;
+    private int MAX_DEEP = 10;
+    private String mPath = "/mnt/sdcard/Download";
 }

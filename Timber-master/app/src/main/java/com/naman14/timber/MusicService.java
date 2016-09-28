@@ -194,7 +194,7 @@ public class MusicService extends Service {
     private int mCardId;
 
     /**
-     * ��ǰ��������
+     * 当前播放索引
      */
     private int mPlayPos = -1;
 
@@ -206,7 +206,7 @@ public class MusicService extends Service {
 
     private int mShuffleMode = SHUFFLE_NONE;
 
-    private int mRepeatMode = REPEAT_NONE;  //ѭ��ģʽ
+    private int mRepeatMode = REPEAT_NONE;  //循环模式
 
     private int mServiceStartId = -1;
 
@@ -707,7 +707,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ��list��ӵ���ǰ�����б���
+     * 将list添加到当前播放列表中
      * @param list
      * @param position
      * @param sourceId
@@ -719,7 +719,7 @@ public class MusicService extends Service {
             mPlaylist.clear();
             position = 0;
         }
-        //ʹ��add()���������µ�Ԫ��ʱ�����Ҫ���ӵ��������ܴ�Ӧ��ʹ��ensureCapacity()�������÷�����������Ԥ������Arraylist�Ĵ�С���������Դ����߳�ʼ���ٶȡ�
+        //使用add()方法增加新的元素时，如果要增加的数据量很大，应该使用ensureCapacity()方法，该方法的作用是预先设置Arraylist的大小，这样可以大大提高初始化速度。
         mPlaylist.ensureCapacity(mPlaylist.size() + addlen);
         if (position > mPlaylist.size()) {
             position = mPlaylist.size();
@@ -811,7 +811,7 @@ public class MusicService extends Service {
 
             updateCursor(mPlaylist.get(mPlayPos).mId);
             while (true) {
-                if (mCursor != null && openFile(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX))) {
+                if (mCursor != null && openFile(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX))) {//播放
                     break;
                 }
 
@@ -853,7 +853,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ��ȡ��һ�׸����ڲ����б�playlist�е�����
+     * 获取下一首歌曲在播放列表playlist中的索引
      * @param force
      * @return
      */
@@ -863,7 +863,7 @@ public class MusicService extends Service {
             LogTool.e("mPlaylist == null || mPlaylist.isEmpty()");
             return -1;
         }
-        if (!force && mRepeatMode == REPEAT_CURRENT) {//����ѭ��
+        if (!force && mRepeatMode == REPEAT_CURRENT) {//单曲循环
             if (mPlayPos < 0) {
                 return 0;
             }
@@ -946,7 +946,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ������һ���׸���
+     * 设置下一个首歌曲
      * @param position
      */
     private void setNextTrack(int position) {
@@ -961,7 +961,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ������һ���׸���
+     * 播放下一个首歌曲
      */
     public void playNextTrack() {
         if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
@@ -1337,7 +1337,7 @@ public class MusicService extends Service {
 
 
     /**
-     * ����·��
+     * 播放路径
      * @param path
      * @return
      */
@@ -1680,7 +1680,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ��ȡ��ǰ���Ÿ���id
+     * 获取当前播放歌曲id
      * @return
      */
     public long getAudioId() {
@@ -1825,7 +1825,7 @@ public class MusicService extends Service {
     }
 
     /**
-     * ���µ�ǰ�����б� mPlaylist
+     * 更新当前播放列表 mPlaylist
      * @param list
      * @param position
      * @param sourceId
@@ -1839,7 +1839,7 @@ public class MusicService extends Service {
             final long oldId = getAudioId();
             final int listlength = list.length;
             boolean newlist = true;
-            if (mPlaylist.size() == listlength) {//�жϵ�ǰ�����б��Ƿ���Ҫ���ŵ��б���ͬһ�б�
+            if (mPlaylist.size() == listlength) {//判断当前播放列表是否与要播放的列表是同一列表
                 newlist = false;
                 for (int i = 0; i < listlength; i++) {
                     if (list[i] != mPlaylist.get(i).mId) {
@@ -1858,7 +1858,7 @@ public class MusicService extends Service {
                 mPlayPos = mShuffler.nextInt(mPlaylist.size());
             }
             mHistory.clear();
-            openCurrentAndNext();   //�򿪵�ǰ��next
+            openCurrentAndNext();   //打开当前和next
             if (oldId != getAudioId()) {
                 notifyChange(META_CHANGED);
             }
@@ -1877,16 +1877,16 @@ public class MusicService extends Service {
      * @param createNewNextTrack
      */
     public void play(boolean createNewNextTrack) {
-        //��Ƶ������ơ�
+        //音频焦点机制。
         int status = mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         if (D) Log.d(TAG, "Starting playback: audio focus request status = " + status);
 
-        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {//�ж��Ƿ��ȡ��Ƶ����
+        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {//判断是否获取音频焦点
             return;
         }
 
-        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);//����ƵЧ��
+        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);//打开音频效果
         intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
         sendBroadcast(intent);
@@ -2361,6 +2361,7 @@ public class MusicService extends Service {
 
 
         /**
+         *  prepare Player path(将path装载到player做好准备)
          * @param player
          * @param path
          * @return
