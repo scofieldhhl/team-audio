@@ -14,7 +14,14 @@
 
 package com.naman14.timber.models;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
+
+@Entity
 public class Song {
+    @Id
+    public long index;
 
     public long albumId;
     public String albumName;
@@ -61,128 +68,32 @@ public class Song {
         this.trackNumber = _trackNumber;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getAlbumName() {
-        return albumName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getArtistName() {
-        return artistName;
-    }
-
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
-    }
-
-    public long getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(long albumId) {
-        this.albumId = albumId;
-    }
-
-    public void setAlbumName(String albumName) {
-        this.albumName = albumName;
-    }
-
-    public long getArtistId() {
-        return artistId;
-    }
-
-    public void setArtistId(long artistId) {
-        this.artistId = artistId;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public int getTrackNumber() {
-        return trackNumber;
-    }
-
-    public void setTrackNumber(int trackNumber) {
-        this.trackNumber = trackNumber;
-    }
-
-    public String getBit() {
-        return bit;
-    }
-
-    public void setBit(String bit) {
-        this.bit = bit;
-    }
-
-    public String getBitRate() {
-        return bitRate;
-    }
-
-    public void setBitRate(String bitRate) {
-        this.bitRate = bitRate;
-    }
-
     public String getCategoryType() {
-        return categoryType;
+        return this.categoryType;
     }
 
     public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
     }
 
-    public String getFormat() {
-        return format;
+    public String getBitRate() {
+        return this.bitRate;
     }
 
-    public void setFormat(String format) {
-        this.format = format;
+    public void setBitRate(String bitRate) {
+        this.bitRate = bitRate;
     }
 
-    public String getIndexBegin() {
-        return indexBegin;
+    public String getBit() {
+        return this.bit;
     }
 
-    public void setIndexBegin(String indexBegin) {
-        this.indexBegin = indexBegin;
-    }
-
-    public String getIndexEnd() {
-        return indexEnd;
-    }
-
-    public void setIndexEnd(String indexEnd) {
-        this.indexEnd = indexEnd;
+    public void setBit(String bit) {
+        this.bit = bit;
     }
 
     public String getSampleRate() {
-        return sampleRate;
+        return this.sampleRate;
     }
 
     public void setSampleRate(String sampleRate) {
@@ -190,10 +101,140 @@ public class Song {
     }
 
     public long getSeekPostion() {
-        return seekPostion;
+        return this.seekPostion;
     }
 
     public void setSeekPostion(long seekPostion) {
         this.seekPostion = seekPostion;
     }
+
+    public String getFormat() {
+        return this.format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getIndexEnd() {
+        return this.indexEnd;
+    }
+
+    public void setIndexEnd(String indexEnd) {
+        this.indexEnd = indexEnd;
+    }
+
+    public String getIndexBegin() {
+        return this.indexBegin;
+    }
+
+    public void setIndexBegin(String indexBegin) {
+        this.indexBegin = indexBegin;
+    }
+
+    public String getPath() {
+        return this.path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public int getTrackNumber() {
+        return this.trackNumber;
+    }
+
+    public void setTrackNumber(int trackNumber) {
+        this.trackNumber = trackNumber;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getDuration() {
+        return this.duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public String getArtistName() {
+        return this.artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public long getArtistId() {
+        return this.artistId;
+    }
+
+    public void setArtistId(long artistId) {
+        this.artistId = artistId;
+    }
+
+    public String getAlbumName() {
+        return this.albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public long getAlbumId() {
+        return this.albumId;
+    }
+
+    public void setAlbumId(long albumId) {
+        this.albumId = albumId;
+    }
+
+    public long getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(long index) {
+        this.index = index;
+    }
+
+    @Generated(hash = 1553552365)
+    public Song(long index, long albumId, String albumName, long artistId, String artistName, int duration, long id, String title, int trackNumber,
+            String path, String indexBegin, String indexEnd, String format, long seekPostion, String sampleRate, String bit, String bitRate,
+            String categoryType) {
+        this.index = index;
+        this.albumId = albumId;
+        this.albumName = albumName;
+        this.artistId = artistId;
+        this.artistName = artistName;
+        this.duration = duration;
+        this.id = id;
+        this.title = title;
+        this.trackNumber = trackNumber;
+        this.path = path;
+        this.indexBegin = indexBegin;
+        this.indexEnd = indexEnd;
+        this.format = format;
+        this.seekPostion = seekPostion;
+        this.sampleRate = sampleRate;
+        this.bit = bit;
+        this.bitRate = bitRate;
+        this.categoryType = categoryType;
+    }
+
+    
 }

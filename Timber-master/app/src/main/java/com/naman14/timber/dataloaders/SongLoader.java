@@ -20,10 +20,13 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import com.naman14.timber.TimberApp;
 import com.naman14.timber.models.Song;
+import com.naman14.timber.models.SongDao;
 import com.naman14.timber.utils.PreferencesUtility;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SongLoader {
 
@@ -117,4 +120,11 @@ public class SongLoader {
         return cursor;
     }
 
+    //add by hhl
+    private static SongDao mDao = TimberApp.getInstance().getDaoSession().getSongDao();
+
+    public static List<Song> getSongsForDB() {
+        List<Song> arrayList = mDao.loadAll();
+        return arrayList;
+    }
 }

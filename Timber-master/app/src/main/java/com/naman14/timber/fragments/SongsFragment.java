@@ -28,12 +28,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.naman14.timber.R;
+import com.naman14.timber.TimberApp;
 import com.naman14.timber.activities.BaseActivity;
 import com.naman14.timber.adapters.SongsListAdapter;
 import com.naman14.timber.dataloaders.MultimediaFileScanner;
 import com.naman14.timber.dataloaders.SongLoader;
 import com.naman14.timber.listeners.MusicStateListener;
 import com.naman14.timber.models.Song;
+import com.naman14.timber.models.SongDao;
 import com.naman14.timber.utils.LogTool;
 import com.naman14.timber.utils.PreferencesUtility;
 import com.naman14.timber.utils.SortOrder;
@@ -126,11 +128,7 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(final Void... unused) {
-                mSongList = SongLoader.getAllSongs(getActivity());
-                mAdapter.updateDataSet(mSongList);
-
-                //加载HQSong
-                MultimediaFileScanner.getInstance(getActivity()).scanTheDirectory(null, mPath, MEDIA_TYPE, fileback);
+                loadAllSong();
                 return null;
             }
 
@@ -189,11 +187,7 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         @Override
         protected String doInBackground(String... params) {
             if (getActivity() != null){
-                mSongList = SongLoader.getAllSongs(getActivity());
-                mAdapter = new SongsListAdapter((AppCompatActivity) getActivity(), mSongList, false);
-                //加载HQSong
-
-                MultimediaFileScanner.getInstance(getActivity()).scanTheDirectory(null, mPath, MEDIA_TYPE, fileback);
+                loadAllSong();
             }
             return "Executed";
         }
@@ -260,10 +254,14 @@ public class SongsFragment extends Fragment implements MusicStateListener {
             }
             mSongList.add(getSongFromPath(path));
             onMetaChanged();
-//            files.add(new File(path));
         }
     };
 
+    /**
+     * 通过路径获取歌曲信息
+     * @param path
+     * @return
+     */
     private Song getSongFromPath(String path){
         Song md = new Song();
         String[] arrFile = path.split("\\.");
@@ -276,6 +274,7 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         md.duration = 0;
         md.artistName = "";
         md.path = path;
+        md.setIndex(mDao.insert(md));
         return md;
     }
 
@@ -283,4 +282,22 @@ public class SongsFragment extends Fragment implements MusicStateListener {
     private int MEDIA_TYPE = MultimediaFileScanner.TYPE_AUDIO;
     private int MAX_DEEP = 10;
     private String mPath = "/mnt/sdcard/Download";
+    //add by hhl
+    private SongDao mDao = TimberApp.getInstance().getDaoSession().getSongDao();
+
+    //load all song
+    private void loadAllSong(){
+        mSongList = SongLoader.getSongsForDB();
+        if(mSongList == null || mSongList.size() == 0){
+            mSongList = SongLoader.getAllSongs(getActivity());
+            mAdapter = new SongsListAdapter((AppCompatActivity) getActivity(), mSongList, false);
+            if(mSongList != null && mSongList.size() > 0){
+                for(Song song : mSongList){
+                    song.setIndex(mDao.insert(song));
+                }
+            }
+            //加载HQSong
+            MultimediaFileScanner.getInstance(getActivity()).scanTheDirectory(null, mPath, MEDIA_TYPE, fileback);
+        }
+    }
 }

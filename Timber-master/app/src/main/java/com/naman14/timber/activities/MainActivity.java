@@ -48,6 +48,7 @@ import com.naman14.timber.utils.NavigationUtils;
 import com.naman14.timber.utils.TimberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -137,6 +138,16 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mContext = this;
+        MobclickAgent.setDebugMode(true);
+        // SDK在统计Fragment时，需要关闭Activity自带的页面统计，
+        // 然后在每个页面中重新集成页面统计的代码(包括调用了 onResume 和 onPause 的Activity)。
+        MobclickAgent.openActivityDurationTrack(false);
+        // MobclickAgent.setAutoLocation(true);
+        // MobclickAgent.setSessionContinueMillis(1000);
+        // MobclickAgent.startWithConfigure(
+        // new UMAnalyticsConfig(mContext, "4f83c5d852701564c0000011", "Umeng", EScenarioType.E_UM_NORMAL));
+        MobclickAgent.setScenarioType(mContext, MobclickAgent.EScenarioType.E_UM_NORMAL);
 
         sMainActivity = this;
         action = getIntent().getAction();
@@ -302,27 +313,30 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         switch (menuItem.getItemId()) {
             case R.id.nav_library:
                 runnable = navigateLibrary;
-
+                MobclickAgent.onEvent(mContext, "nav_library");
                 break;
             case R.id.nav_playlists:
                 runnable = navigatePlaylist;
-
+                MobclickAgent.onEvent(mContext, "nav_playlists");
                 break;
             case R.id.nav_nowplaying:
                 NavigationUtils.navigateToNowplaying(MainActivity.this, false);
+                MobclickAgent.onEvent(mContext, "nav_nowplaying");
                 break;
             case R.id.nav_queue:
                 runnable = navigateQueue;
-
+                MobclickAgent.onEvent(mContext, "nav_queue");
                 break;
             case R.id.nav_settings:
                 NavigationUtils.navigateToSettings(MainActivity.this);
+                MobclickAgent.onEvent(mContext, "nav_settings");
                 break;
             case R.id.nav_help:
                 /*Intent intent = new Intent(Intent.ACTION_VIEW);
                 Uri data = Uri.parse("mailto:namandwivedi14@gmail.com");
                 intent.setData(data);
                 startActivity(intent);*/
+                MobclickAgent.onEvent(mContext, "nav_help");
                 break;
             case R.id.nav_about:
                 mDrawerLayout.closeDrawers();
@@ -333,7 +347,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                         Helpers.showAbout(MainActivity.this);
                     }
                 }, 350);*/
-
+                MobclickAgent.onEvent(mContext, "nav_about");
                 break;
         }
 
@@ -375,6 +389,15 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     public void onResume() {
         super.onResume();
         sMainActivity = this;
+        MobclickAgent.onPageStart(mPageName);
+        MobclickAgent.onResume(mContext);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd(mPageName);
+        MobclickAgent.onPause(mContext);
     }
 
     @Override
@@ -403,7 +426,8 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     public int getActivityTheme() {
         return isDarkTheme ? R.style.AppThemeNormalDark : R.style.AppThemeNormalLight;
     }
-
+    //add by hhl
+    private final String mPageName = this.getClass().getName();
 }
 
 

@@ -7,8 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0'
         apply plugin: 'java'
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.0.0'
     }
 }
 
